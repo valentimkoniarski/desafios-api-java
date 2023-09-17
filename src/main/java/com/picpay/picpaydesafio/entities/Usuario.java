@@ -1,13 +1,22 @@
 package com.picpay.picpaydesafio.entities;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+@Getter
+@Setter
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +35,48 @@ public class Usuario {
 
     @NotNull
     private String senha;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+    private Boolean locked = false;
+
+    private Boolean enabled = false;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        SimpleGrantedAuthority authority =
+                new SimpleGrantedAuthority(userRole.name());
+        return Collections.singletonList(authority);
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !locked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 
 }
