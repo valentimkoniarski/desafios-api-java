@@ -4,7 +4,6 @@ import com.picpay.picpaydesafio.dtos.LojistaDto;
 import com.picpay.picpaydesafio.entities.Lojista;
 import com.picpay.picpaydesafio.entities.Usuario;
 import com.picpay.picpaydesafio.repositories.LojistaRepository;
-import com.picpay.picpaydesafio.validacoes.cliente.ValidacaoCriacaoDoCliente;
 import com.picpay.picpaydesafio.validacoes.lojista.SaldoInicialZero;
 import com.picpay.picpaydesafio.validacoes.lojista.SomenteUmLojistaPorUsuario;
 import com.picpay.picpaydesafio.validacoes.lojista.ValidacaoCriacaoDoLojista;
