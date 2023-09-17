@@ -1,6 +1,8 @@
 package com.picpay.picpaydesafio.entities;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
@@ -8,6 +10,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "lojistas")
+@Setter
+@Getter
 public class Lojista {
 
     @Id
@@ -17,7 +21,7 @@ public class Lojista {
     @NotNull
     private BigDecimal saldo;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
