@@ -12,6 +12,6 @@ import javax.transaction.Transactional;
 public interface LojistaRepository extends JpaRepository<Lojista, Long> {
 
     @Query(value = "SELECT CASE WHEN EXISTS (SELECT * FROM lojistas WHERE usuario_id = ?1) THEN TRUE ELSE FALSE END", nativeQuery = true)
-    boolean findLojistaByUsuarioId(Long usuarioId);
+    boolean existsByUsuario(Long usuarioId);
 
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,13 +35,14 @@ public class LojistaService {
         this.lojistaRepository = lojistaRepository;
         this.usuarioService = usuarioService;
         this.modelMapper = modelMapper;
-        this.validacoes = validacoes;
+        this.validacoes = setValidacoesDeCricao();
     }
 
     public void salvar(HttpServletRequest request) {
         final LojistaDto lojistaDto = new LojistaDto(BigDecimal.ZERO);
         final Lojista lojista = modelMapper.map(lojistaDto, Lojista.class);
         setterUsuario(request, lojista);
+        validacoes(lojista);
         lojistaRepository.save(lojista);
     }
 
@@ -49,7 +51,8 @@ public class LojistaService {
         lojista.setUsuario(usuario);
     }
 
-    private List<ValidacaoCriacaoDoLojista> setValidacoesDeCricao(List<ValidacaoCriacaoDoLojista> validacoes) {
+    private List<ValidacaoCriacaoDoLojista> setValidacoesDeCricao() {
+        List<ValidacaoCriacaoDoLojista> validacoes = new ArrayList<>();
         validacoes.add(new SaldoInicialZero());
         validacoes.add(new SomenteUmLojistaPorUsuario(lojistaRepository));
         return validacoes;

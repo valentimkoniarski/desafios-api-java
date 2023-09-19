@@ -22,8 +22,9 @@ public class LojistaController {
         try {
             lojistaService.salvar(request);
             return ResponseEntity.ok().build();
-        } catch (LojistaValidacoesException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (LojistaValidacoesException.LojistaExistenteException |
+                 LojistaValidacoesException.SaldoInicialInvalidoException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
