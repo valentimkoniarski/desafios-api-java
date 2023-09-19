@@ -45,6 +45,11 @@ public class UsuarioService implements UserDetailsService {
         usuarioDto.setSenha(bCryptPasswordEncoder.encode(usuarioDto.getSenha()));
     }
 
+    public Usuario getUsuarioById(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(() ->
+                new UsernameNotFoundException(String.format("Usuario não encontrado com id %s", id)));
+    }
+
     public Usuario getUserByToken(HttpServletRequest request) {
         Long idUser = getIdUserByToken(request);
         Usuario usuario = usuarioRepository.findById(idUser).orElseThrow(() ->

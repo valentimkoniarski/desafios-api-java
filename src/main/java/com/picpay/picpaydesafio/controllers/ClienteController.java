@@ -23,8 +23,9 @@ public class ClienteController {
         try {
             clienteService.salvar(request);
             return ResponseEntity.ok().build();
-        } catch (ClienteValidacoesException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (ClienteValidacoesException.ClienteExistenteException |
+                 ClienteValidacoesException.SaldoInicialInvalidoException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
