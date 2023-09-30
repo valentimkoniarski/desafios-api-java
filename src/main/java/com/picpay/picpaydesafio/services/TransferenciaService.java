@@ -4,13 +4,11 @@ import com.picpay.picpaydesafio.dtos.TransferenciaDto;
 import com.picpay.picpaydesafio.dtos.UsuarioDto;
 import com.picpay.picpaydesafio.entities.Transferencia;
 import com.picpay.picpaydesafio.entities.Usuario;
-import com.picpay.picpaydesafio.repositories.ClienteRepository;
 import com.picpay.picpaydesafio.repositories.LojistaRepository;
 import com.picpay.picpaydesafio.repositories.TransferenciaRepository;
-import com.picpay.picpaydesafio.validacoes.transferencia.LojistaNaoTransfere;
-import com.picpay.picpaydesafio.validacoes.transferencia.SaldoNaoPodeSerNegativo;
-import com.picpay.picpaydesafio.validacoes.transferencia.ValidacaoTransferencia;
+import com.picpay.picpaydesafio.validacoes.transferencia.*;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +19,9 @@ import java.util.List;
 
 @Service
 @Transactional
-public class TransferenciaService {
+public class TransferenciaService implements TransferenciaSaldo {
 
     private final TransferenciaRepository transferenciaRepository;
-
-    private final ClienteRepository clienteRepository;
 
     private final LojistaRepository lojistaRepository;
 
@@ -35,17 +31,20 @@ public class TransferenciaService {
 
     private final List<ValidacaoTransferencia> validacaoTransferencias;
 
+    private final SaldoAtualizacao saldoAtualizacao;
+
+    @Autowired
     public TransferenciaService(TransferenciaRepository transferenciaRepository,
-                                ClienteRepository clienteRepository,
                                 LojistaRepository lojistaRepository,
                                 UsuarioService usuarioService,
-                                ModelMapper modelMapper) {
+                                ModelMapper modelMapper,
+                                SaldoAtualizacao saldoAtualizacao) {
         this.transferenciaRepository = transferenciaRepository;
-        this.clienteRepository = clienteRepository;
         this.lojistaRepository = lojistaRepository;
         this.usuarioService = usuarioService;
         this.modelMapper = modelMapper;
-        this.validacaoTransferencias = setValidacaoDeCricao();
+        this.validacaoTransferencias = validacoes();
+        this.saldoAtualizacao = saldoAtualizacao;
     }
 
     /**
@@ -53,13 +52,11 @@ public class TransferenciaService {
      * e fazendo as validações necessárias que se encontram no método `setValidacaoDeCricao()`.
      *
      * @param request          HttpServletRequest
-     * @param transferenciaDto DTO contendo os dados da transferência. Obs.: Os dados do usuario transferidor precisa
-     *                         ser obrigatório o ID, o mesmo vale para o usuario recebedor necessita somente do ID.
+     * @param transferenciaDto DTO contendo os dados da transferência.
      */
-    public void transferenciaEntreClientes(HttpServletRequest request, TransferenciaDto transferenciaDto) {
+    public void transferencia(HttpServletRequest request, TransferenciaDto transferenciaDto) {
         Transferencia transferencia = setterTransferenciaDto(request, transferenciaDto);
-        clienteRepository.updateSaldoClienteRecebedor(transferencia.getValor(), transferencia.getUsuarioRecebedor().getId());
-        clienteRepository.updateSaldoClienteTransferidor(transferencia.getValor(), transferencia.getUsuarioTransferidor().getId());
+        atualizarSaldos(transferencia);
         validacoes(transferencia);
         transferenciaRepository.save(transferencia);
     }
@@ -85,7 +82,7 @@ public class TransferenciaService {
         return transferencia;
     }
 
-    private List<ValidacaoTransferencia> setValidacaoDeCricao() {
+    private List<ValidacaoTransferencia> validacoes() {
         List<ValidacaoTransferencia> validacoes = new ArrayList<>();
         validacoes.add(new LojistaNaoTransfere(lojistaRepository));
         validacoes.add(new SaldoNaoPodeSerNegativo());
@@ -96,4 +93,9 @@ public class TransferenciaService {
         validacaoTransferencias.forEach(validacao -> validacao.validacao(transferencia));
     }
 
+    @Override
+    public void atualizarSaldos(Transferencia transferencia) {
+        saldoAtualizacao.atualizarSaldoRecebedor(transferencia.getValor(), transferencia.getUsuarioRecebedor().getId());
+        saldoAtualizacao.atualizarSaldoTransferidor(transferencia.getValor(), transferencia.getUsuarioTransferidor().getId());
+    }
 }
