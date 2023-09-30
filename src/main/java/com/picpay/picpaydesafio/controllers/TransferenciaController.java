@@ -19,11 +19,11 @@ public class TransferenciaController {
 
     private final TransferenciaService transferenciaService;
 
-    @PostMapping("/clientes")
+    @PostMapping
     public ResponseEntity transferenciaEntreClientes(HttpServletRequest request,
                                                      @RequestBody TransferenciaDto transferenciaDto) {
         try {
-            transferenciaService.transferenciaEntreClientes(request, transferenciaDto);
+            transferenciaService.transferencia(request, transferenciaDto);
             return ResponseEntity.ok().build();
         } catch (TransferenciaValidacoesException.LojistaNaoPodeTransferirException
                  | TransferenciaValidacoesException.SaldoNaoPodeSerNegativoException e) {
