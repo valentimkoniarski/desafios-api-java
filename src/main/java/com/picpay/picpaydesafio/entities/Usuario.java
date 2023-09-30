@@ -37,10 +37,10 @@ public class Usuario implements UserDetails {
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole userRole = UserRole.USER;
     private Boolean locked = false;
 
-    private Boolean enabled = false;
+    private Boolean enabled = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
