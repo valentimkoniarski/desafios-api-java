@@ -16,12 +16,4 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query(value = "SELECT CASE WHEN EXISTS (SELECT * FROM clientes WHERE usuario_id = ?1) THEN TRUE ELSE FALSE END", nativeQuery = true)
     boolean findClienteByUsuarioId(Long usuarioId);
 
-    @Modifying
-    @Query(value = "UPDATE clientes SET saldo =+ saldo + ?1 WHERE usuario_id = ?2", nativeQuery = true)
-    void updateSaldoClienteRecebedor(BigDecimal saldo, Long usuarioId);
-
-    @Modifying
-    @Query(value = "UPDATE clientes SET saldo =+ saldo - ?1 WHERE usuario_id = ?2", nativeQuery = true)
-    void updateSaldoClienteTransferidor(BigDecimal saldo, Long usuarioId);
-
 }
