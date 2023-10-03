@@ -5,11 +5,16 @@ import com.picpay.picpaydesafio.exceptions.ClienteValidacoesException;
 
 import java.math.BigDecimal;
 
-public class SaldoInicialZero implements ValidacaoCriacaoDoCliente {
+public class SaldoInicialMil implements ValidacaoCriacaoDoCliente {
     @Override
     public void validacao(Cliente cliente) {
-        if (cliente.getSaldo().compareTo(BigDecimal.ZERO) != 0) {
+        if (!isIgualAMil(cliente)) {
             throw new ClienteValidacoesException.SaldoInicialInvalidoException();
         }
+    }
+
+    private static boolean isIgualAMil(Cliente cliente) {
+        final BigDecimal saldoInicialMil = BigDecimal.valueOf(1000);
+        return cliente.getSaldo().equals(saldoInicialMil);
     }
 }
