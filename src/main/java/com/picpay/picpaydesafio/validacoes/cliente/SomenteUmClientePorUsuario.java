@@ -3,12 +3,18 @@ package com.picpay.picpaydesafio.validacoes.cliente;
 import com.picpay.picpaydesafio.entities.Cliente;
 import com.picpay.picpaydesafio.exceptions.ClienteValidacoesException;
 import com.picpay.picpaydesafio.repositories.ClienteRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+@Component
 public class SomenteUmClientePorUsuario implements ValidacaoCriacaoDoCliente {
 
     private final ClienteRepository clienteRepository;
+
+    @Autowired
+    public SomenteUmClientePorUsuario(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
 
     @Override
     public void validacao(Cliente cliente) {
